@@ -7,6 +7,18 @@ namespace CleaningRobot.Models
     /// </summary>
     public class RobotLocation : Location
     {
+        public RobotLocation() : base() { }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public RobotLocation(RobotLocation src) : base(src)
+        {
+            Facing = src.Facing;
+        }
+
         /// <summary>
         /// Current direction of robot
         /// </summary>

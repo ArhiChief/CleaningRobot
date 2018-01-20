@@ -7,6 +7,18 @@ namespace CleaningRobot.Models
     /// </summary>
     public class Location
     {
+        public Location() { }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="src">Source to copy</param>
+        public Location(Location src)
+        {
+            X = src.X;
+            Y = src.Y;
+        }
+
         /// <summary>
         /// X coordinate
         /// </summary>
