@@ -10,13 +10,20 @@ namespace CleaningRobot.Common
     /// </summary>
     public class CommandConverter : JsonConverter
     {
-        private readonly Type[] _types = new Type[] { typeof(Command) };
+        private readonly Type _convertableType =  typeof(Command) ;
 
-        public override bool CanConvert(Type objectType) => _types.Any(t => t == objectType);
+        public override bool CanConvert(Type objectType) => _convertableType == objectType;
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            if (reader.TokenType == JsonToken.String)
+            {
+                Command result = (Command) Enum.Parse(_convertableType, reader.Value.ToString(), true);
+
+                return result;
+            }
+
+            throw new JsonSerializationException();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
