@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using CleaningRobot.CleaningRobot.Models;
+using CleaningRobot.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

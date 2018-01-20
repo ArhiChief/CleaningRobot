@@ -1,4 +1,4 @@
-using CleaningRobot.CleaningRobot.Models;
+using CleaningRobot.Models;
 
 namespace CleaningRobot.CleaningRobot
 {

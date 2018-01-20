@@ -1,4 +1,4 @@
-namespace CleaningRobot.CleaningRobot.Models
+namespace CleaningRobot.Models
 {
     /// <summary>
     /// Possible facing direction of robot

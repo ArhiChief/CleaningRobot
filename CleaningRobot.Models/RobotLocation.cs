@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CleaningRobot.CleaningRobot.Models
+namespace CleaningRobot.Models
 {
     /// <summary>
     /// Determines cleaning robot position on the map

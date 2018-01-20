@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CleaningRobot.CleaningRobot.Models
+namespace CleaningRobot.Models
 {
     /// <summary>
     /// Input file structure

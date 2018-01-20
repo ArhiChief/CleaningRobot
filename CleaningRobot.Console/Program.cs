@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using CleaningRobot.CleaningRobot;
-using CleaningRobot.CleaningRobot.Models;
+using CleaningRobot.Models;
 using CleaningRobot.Common;
 using Newtonsoft.Json;
 
