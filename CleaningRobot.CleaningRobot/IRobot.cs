@@ -26,6 +26,6 @@ namespace CleaningRobot.CleaningRobot
         /// Returns robot final result
         /// </summary>
         /// <returns>Robot final result</returns>
-        RobotOutput FinalResult();
+        RobotOutput GetFinalResult();
     }
 }

@@ -21,7 +21,7 @@ namespace CleaningRobot.Console
 
                 robot.ExecuteCommands(input.Commands.ToArray());
 
-                var output = robot.FinalResult();
+                var output = robot.GetFinalResult();
 
                 File.WriteAllText(args[1], JsonConvert.SerializeObject(output, converters));
             }
