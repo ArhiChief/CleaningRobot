@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CleaningRobot.CleaningRobot.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CleaningRobot.Common
 {
@@ -10,7 +11,7 @@ namespace CleaningRobot.Common
     /// </summary>
     public class CommandConverter : JsonConverter
     {
-        private readonly Type _convertableType =  typeof(Command) ;
+        private readonly Type _convertableType = typeof(Command);
 
         public override bool CanConvert(Type objectType) => _convertableType == objectType;
 
@@ -18,7 +19,7 @@ namespace CleaningRobot.Common
         {
             if (reader.TokenType == JsonToken.String)
             {
-                Command result = (Command) Enum.Parse(_convertableType, reader.Value.ToString(), true);
+                Command result = (Command)Enum.Parse(_convertableType, reader.Value.ToString(), true);
 
                 return result;
             }
@@ -28,7 +29,8 @@ namespace CleaningRobot.Common
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var jToken = JToken.FromObject(value.ToString());
+            jToken.WriteTo(writer);
         }
     }
 }

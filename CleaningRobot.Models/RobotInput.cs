@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CleaningRobot.CleaningRobot.Models
 {
@@ -10,22 +11,22 @@ namespace CleaningRobot.CleaningRobot.Models
         /// <summary>
         /// Map
         /// </summary>
-        /// <returns>Map</returns>
+        [JsonProperty("map")]
         public List<List<MapCell>> Map { get; set; }
         /// <summary>
         /// Cleaning robot start position
         /// </summary>
-        /// <returns>Map</returns>
+        [JsonProperty("start")]
         public RobotLocation Start { get; set; }
         /// <summary>
         /// List of commands what robot will execute
         /// </summary>
-        /// <returns>List of commands</returns>
+        [JsonProperty("commands")]
         public List<Command> Commands { get; set; }
         /// <summary>
         /// Volume of the robot battery
         /// </summary>
-        /// <returns>volume of the robot battery</returns>
+        [JsonProperty("battery")]
         public int Battery { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace CleaningRobot.CleaningRobot.Models
 {
     /// <summary>
@@ -8,6 +10,7 @@ namespace CleaningRobot.CleaningRobot.Models
         /// <summary>
         /// Current direction of robot
         /// </summary>
+        [JsonProperty("facing")]
         public FacingDirection Facing { get; set; }
     }
 }

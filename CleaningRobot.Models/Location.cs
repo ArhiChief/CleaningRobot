@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace CleaningRobot.CleaningRobot.Models
 {
     /// <summary>
@@ -8,12 +10,12 @@ namespace CleaningRobot.CleaningRobot.Models
         /// <summary>
         /// X coordinate
         /// </summary>
-        /// <returns>X coordinate</returns>
+        [JsonProperty("X")]
         public int X { get; set; }
         /// <summary>
         /// Y coordinate
         /// </summary>
-        /// <returns>Y coordinate</returns>
+        [JsonProperty("Y")]
         public int Y { get; set; }
     }
 }

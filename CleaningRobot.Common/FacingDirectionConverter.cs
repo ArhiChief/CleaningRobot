@@ -2,12 +2,13 @@ using System;
 using System.Linq;
 using CleaningRobot.CleaningRobot.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CleaningRobot.Common
 {
     public class FacingDirectionConverter : JsonConverter
     {
-        private readonly Type _convertableType =  typeof(FacingDirection);
+        private readonly Type _convertableType = typeof(FacingDirection);
 
         public override bool CanConvert(Type objectType) => _convertableType == objectType;
 
@@ -15,7 +16,7 @@ namespace CleaningRobot.Common
         {
             if (reader.TokenType == JsonToken.String)
             {
-                FacingDirection result = (FacingDirection) Enum.Parse(_convertableType, reader.Value.ToString(), true);
+                FacingDirection result = (FacingDirection)Enum.Parse(_convertableType, reader.Value.ToString(), true);
 
                 return result;
             }
@@ -25,7 +26,8 @@ namespace CleaningRobot.Common
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var jToken = JToken.FromObject(value.ToString());
+            jToken.WriteTo(writer);
         }
     }
 }
