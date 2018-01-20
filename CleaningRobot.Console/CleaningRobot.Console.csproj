@@ -5,4 +5,14 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CleaningRobot.Models\CleaningRobot.Models.csproj" />
+    <ProjectReference Include="..\CleaningRobot.Common\CleaningRobot.Common.csproj" />
+    <ProjectReference Include="..\CleaningRobot.CleaningRobot\CleaningRobot.CleaningRobot.csproj" />
+  </ItemGroup>
+
 </Project>
