@@ -13,13 +13,18 @@ namespace CleaningRobot.Console
         {
             if (CheckProgramArguments(args))
             {
-                var converters = new JsonConverter[] {new CommandConverter(), new FacingDirectionConverter(), new MapCellConverter()};
+                var converters = new JsonConverter[] { new CommandConverter(), new FacingDirectionConverter(), new MapCellConverter() };
 
                 var input = JsonConvert.DeserializeObject<RobotInput>(File.ReadAllText(args[0]), converters);
 
                 IRobot robot = new Robot(input);
 
                 robot.ExecuteCommands(input.Commands);
+
+                foreach (var msg in robot.Log)
+                {
+                    System.Console.WriteLine(msg);
+                }
 
                 var output = robot.GetFinalResult();
 
