@@ -19,7 +19,7 @@ namespace CleaningRobot.Console
 
                 IRobot robot = new Robot(input);
 
-                robot.ExecuteCommands(input.Commands.ToArray());
+                robot.ExecuteCommands(input.Commands);
 
                 var output = robot.GetFinalResult();
 
