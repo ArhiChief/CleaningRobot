@@ -8,11 +8,6 @@ namespace CleaningRobot.CleaningRobot
     public interface IRobot
     {
         /// <summary>
-        /// Execute command
-        /// </summary>
-        /// <param name="command">Command to execute</param>
-        void ExecuteCommand(Command command);
-        /// <summary>
         /// Execute list of commands
         /// </summary>
         /// <param name="commands">List of commands to execute</param>
