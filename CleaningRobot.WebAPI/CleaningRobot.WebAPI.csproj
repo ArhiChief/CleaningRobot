@@ -16,4 +16,9 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CleaningRobot.Models\CleaningRobot.Models.csproj" />
+    <ProjectReference Include="..\CleaningRobot.Common\CleaningRobot.Common.csproj" />
+  </ItemGroup>
+
 </Project>

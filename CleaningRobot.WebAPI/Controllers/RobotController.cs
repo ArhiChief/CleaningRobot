@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using CleaningRobot.WebAPI.Infrastructure;
 
 namespace CleaningRobot.WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class RobotController : Controller
     {
+
+        private readonly IRobotManager _robotManager;
+
+        public RobotController(IRobotManager robotManager)
+        {
+            _robotManager = robotManager ?? throw new ArgumentNullException(nameof(robotManager));
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
