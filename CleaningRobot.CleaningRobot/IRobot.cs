@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CleaningRobot.Models;
 
 namespace CleaningRobot.CleaningRobot
@@ -13,10 +14,10 @@ namespace CleaningRobot.CleaningRobot
         /// <param name="commands">List of commands to execute</param>
         void ExecuteCommands(params Command[] commands);
         /// <summary>
-        /// Get current robot status. Used for debug,
+        /// Get log of robot command execution process. Used for debug,
         /// </summary>
-        /// <returns>Current status of robot</returns>
-        RobotStatus Status { get; }
+        /// <returns>Robot command execution log</returns>
+        List<RobotCommandExecutionStatus> Log { get; }
         /// <summary>
         /// Returns robot final result
         /// </summary>

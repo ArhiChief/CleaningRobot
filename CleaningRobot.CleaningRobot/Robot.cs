@@ -28,13 +28,13 @@ namespace CleaningRobot.CleaningRobot
                 throw new System.ArgumentException("Empty map", nameof(input.Map));
             }
 
-            if (input.Map.Any(row => !row.Any()) || input.Map.GroupBy(row => row.Count).Count() > 1)
+            if (input.Map.Any(row => !row.Any()) || input.Map.GroupBy(row => row.Length).Count() > 1)
             {
                 throw new System.ArgumentException("Map must be rectangle", nameof(input.Map));
             }
 
-            maxY = input.Map.Count - 1;
-            maxX = input.Map[0].Count - 1;
+            maxY = input.Map.Length - 1;
+            maxX = input.Map[0].Length - 1;
 
             currentLocation = input.Start ?? throw new System.ArgumentNullException(nameof(input.Start));
 
@@ -52,19 +52,26 @@ namespace CleaningRobot.CleaningRobot
             battery = input.Battery;
         }
 
+        // Debug only. Used to see how robot process each command
+        public List<RobotCommandExecutionStatus> Log { get; private set; } = new List<RobotCommandExecutionStatus>();
+
         private static readonly Command[][] _backOffStartegies = new Command[][]
         {
-            new [] { Command.TR, Command.A },
-            new [] { Command.TL, Command.B, Command.TR, Command.A },
-            new [] { Command.TL, Command.TL, Command.A },
-            new [] { Command.TR, Command.B, Command.TR, Command.A },
-            new [] { Command.TL, Command.TL, Command.A }
+            new [] { Command.TR, Command.A },                           // strategy 1
+            new [] { Command.TL, Command.B, Command.TR, Command.A },    // strategy 2
+            new [] { Command.TL, Command.TL, Command.A },               // strategy 3
+            new [] { Command.TR, Command.B, Command.TR, Command.A },    // strategy 4
+            new [] { Command.TL, Command.TL, Command.A }                // strategy 5
         };
 
-        private List<List<MapCell>> map;
+        private MapCell[][] map;
+
         private int battery;
-        private HashSet<Location> visited = new HashSet<Location>();
+
+        private HashSet<Location> visited = new HashSet<Location>(); // HashSet is used to prevent duplicates
+
         private HashSet<Location> cleaned = new HashSet<Location>();
+
         private RobotLocation currentLocation;
 
         /// <summary>
@@ -82,10 +89,9 @@ namespace CleaningRobot.CleaningRobot
         /// </summary>
         private int maxY;
 
-        public RobotStatus Status => throw new System.NotImplementedException();
-
         public void ExecuteCommands(params Command[] commands)
         {
+            Log.Add(new RobotCommandExecutionStatus(currentLocation, battery));
             foreach (var command in commands)
             {
                 if (!ExecuteOrder(command))
@@ -100,9 +106,9 @@ namespace CleaningRobot.CleaningRobot
             return new RobotOutput
             {
                 Battery = battery,
-                Cleaned = cleaned.ToList(),
+                Cleaned = cleaned.ToArray(),
                 Final = currentLocation,
-                Visited = visited.ToList()
+                Visited = visited.ToArray()
             };
         }
 
@@ -115,12 +121,15 @@ namespace CleaningRobot.CleaningRobot
         {
             if (UpdateBaterryLevel(command))
             {
-                if (CanExecuteOrder(command))
+                if (NotHitsObstacle(command))
                 {
-                    var location = new Location(currentLocation);
-                    LogCommand(location, command);
+                    SaveVisitedAndCleanedCells(currentLocation, command);
 
                     UpdateLocation(command, currentLocation);
+
+                    Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                        command, RobotCommandExecutionStatus.ExecutionCommandType.C,
+                        RobotCommandExecutionStatus.CommandExecutionResult.OK));
 
                     return true;
                 }
@@ -131,9 +140,15 @@ namespace CleaningRobot.CleaningRobot
                     // algorithm (back off strategy).
                     if (command == Command.A)
                     {
+                        Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                            command, RobotCommandExecutionStatus.ExecutionCommandType.C,
+                            RobotCommandExecutionStatus.CommandExecutionResult.B1));
                         return ExecuteBackOffStrategy();
                     }
 
+                    Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                        command, RobotCommandExecutionStatus.ExecutionCommandType.C,
+                        RobotCommandExecutionStatus.CommandExecutionResult.FailHitsObstacle));
                     return false;
                 }
             }
@@ -143,35 +158,52 @@ namespace CleaningRobot.CleaningRobot
                 // the robot will ignore the order and instead follow the following 
                 // algorithm (back off strategy)
                 ExecuteBackOffStrategy();
+                Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                        command, RobotCommandExecutionStatus.ExecutionCommandType.C,
+                        RobotCommandExecutionStatus.CommandExecutionResult.FailBattery));
                 return false;
             }
         }
 
         bool ExecuteBackOffStrategy()
         {
-            for (int i = 0; i < _backOffStartegies.Length; i++)
+            Command command = Command.A;
+            int i = 0;
+
+            for (; i < _backOffStartegies.Length; i++)
             {
                 bool strategyExecuted = true;
                 for (int j = 0; j < _backOffStartegies[i].Length; j++)
                 {
-                    Command command = _backOffStartegies[i][j];
+                    command = _backOffStartegies[i][j];
 
                     if (UpdateBaterryLevel(command))
                     {
-                        if (CanExecuteOrder(command))
+                        if (NotHitsObstacle(command))
                         {
-                            LogCommand(currentLocation, command);
+                            SaveVisitedAndCleanedCells(currentLocation, command);
                             UpdateLocation(command, currentLocation);
+
+                            Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                                command, (RobotCommandExecutionStatus.ExecutionCommandType)i,
+                                RobotCommandExecutionStatus.CommandExecutionResult.OK));
                         }
                         else
                         {
                             // Robot hits obstacle while execute back off strategy. Lets try another one.
                             strategyExecuted = false;
+                            Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                                command, (RobotCommandExecutionStatus.ExecutionCommandType)i,
+                                (RobotCommandExecutionStatus.CommandExecutionResult)i + 1));
+
                             break;
                         }
                     }
                     else
                     {
+                        Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                                command, (RobotCommandExecutionStatus.ExecutionCommandType)i,
+                                RobotCommandExecutionStatus.CommandExecutionResult.FailBattery));
                         return false;
                     }
                 }
@@ -182,6 +214,9 @@ namespace CleaningRobot.CleaningRobot
                 }
             }
 
+            Log.Add(new RobotCommandExecutionStatus(currentLocation, battery, commandNumber,
+                                command, (RobotCommandExecutionStatus.ExecutionCommandType)i,
+                                RobotCommandExecutionStatus.CommandExecutionResult.FailBackOff));
             return false; // Robot hits obstacle again on last startegy
         }
 
@@ -228,7 +263,7 @@ namespace CleaningRobot.CleaningRobot
         /// Check if robot can execute next command
         /// </summary>
         /// <returns>True if robot can move, false if robot will hit obstacle</returns>
-        bool CanExecuteOrder(Command command)
+        bool NotHitsObstacle(Command command)
         {
             if (command != Command.A && command != Command.B)
             {
@@ -310,7 +345,7 @@ namespace CleaningRobot.CleaningRobot
             location.Y += shiftY;
         }
 
-        void LogCommand(Location location, Command command)
+        void SaveVisitedAndCleanedCells(Location location, Command command)
         {
             var loc = new Location(location);
             switch (command)

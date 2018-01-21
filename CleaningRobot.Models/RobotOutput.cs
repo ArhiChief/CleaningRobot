@@ -12,12 +12,12 @@ namespace CleaningRobot.Models
         /// List of visited map cells
         /// </summary>
         [JsonProperty("visited")]
-        public List<Location> Visited { get; set; }
+        public Location[] Visited { get; set; }
         /// <summary>
         /// List of cleaned map cells
         /// </summary>
         [JsonProperty("cleaned")]
-        public List<Location> Cleaned { get; set; }
+        public Location[] Cleaned { get; set; }
         /// <summary>
         /// Position on the map after all command executed or battery drained
         /// </summary>

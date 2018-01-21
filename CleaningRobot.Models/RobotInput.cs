@@ -12,7 +12,7 @@ namespace CleaningRobot.Models
         /// Map
         /// </summary>
         [JsonProperty("map")]
-        public List<List<MapCell>> Map { get; set; }
+        public MapCell[][] Map { get; set; }
         /// <summary>
         /// Cleaning robot start position
         /// </summary>
@@ -22,7 +22,7 @@ namespace CleaningRobot.Models
         /// List of commands what robot will execute
         /// </summary>
         [JsonProperty("commands")]
-        public List<Command> Commands { get; set; }
+        public Command[] Commands { get; set; }
         /// <summary>
         /// Volume of the robot battery
         /// </summary>
