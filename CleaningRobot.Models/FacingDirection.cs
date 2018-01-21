@@ -39,10 +39,13 @@ namespace CleaningRobot.Models
             {
                 case FacingDirection.N:
                     return FacingDirection.W;
+
                 case FacingDirection.W:
                     return FacingDirection.S;
+
                 case FacingDirection.S:
                     return FacingDirection.E;
+
                 case FacingDirection.E:
                     return FacingDirection.N;
             }
@@ -60,10 +63,13 @@ namespace CleaningRobot.Models
             {
                 case FacingDirection.N:
                     return FacingDirection.E;
+
                 case FacingDirection.E:
                     return FacingDirection.S;
+
                 case FacingDirection.S:
                     return FacingDirection.W;
+                    
                 case FacingDirection.W:
                     return FacingDirection.N;
             }

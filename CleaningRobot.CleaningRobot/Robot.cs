@@ -22,7 +22,7 @@ namespace CleaningRobot.CleaningRobot
 
             map = input.Map ?? throw new System.ArgumentNullException(nameof(input.Map));
 
-            // check for map correctnes
+            // Check for map correctnes
             if (!input.Map.Any())
             {
                 throw new System.ArgumentException("Empty map", nameof(input.Map));
@@ -38,7 +38,7 @@ namespace CleaningRobot.CleaningRobot
 
             currentLocation = input.Start ?? throw new System.ArgumentNullException(nameof(input.Start));
 
-            // check for correctnes of robot position on the map
+            // Check for correctnes of robot position on the map
             if (input.Start.X < 0 || input.Start.X > maxX || input.Start.Y < 0 || input.Start.Y > maxY)
             {
                 throw new System.ArgumentException("Robot is out of map", nameof(input.Start));
@@ -63,9 +63,14 @@ namespace CleaningRobot.CleaningRobot
 
         private List<List<MapCell>> map;
         private int battery;
-        private List<Location> visited = new List<Location>();
-        private List<Location> cleaned = new List<Location>();
+        private HashSet<Location> visited = new HashSet<Location>();
+        private HashSet<Location> cleaned = new HashSet<Location>();
         private RobotLocation currentLocation;
+
+        /// <summary>
+        /// Counter of already executed commands
+        /// </summary>
+        private int commandNumber = 0;
 
         /// <summary>
         /// Maximal X coordinate on the map
@@ -83,7 +88,7 @@ namespace CleaningRobot.CleaningRobot
         {
             foreach (var command in commands)
             {
-                if (!ExecuteCommand(command))
+                if (!ExecuteOrder(command))
                 {
                     break;
                 }
@@ -95,27 +100,25 @@ namespace CleaningRobot.CleaningRobot
             return new RobotOutput
             {
                 Battery = battery,
-                Cleaned = cleaned.Distinct().ToList(), // no need to duplicate values
+                Cleaned = cleaned.ToList(),
                 Final = currentLocation,
-                Visited = visited.Distinct().ToList()
+                Visited = visited.ToList()
             };
         }
 
-        bool ExecuteCommand(Command command)
+        /// <summary>
+        /// Execute provided command
+        /// </summary>
+        /// <param name="command">Command to execute</param>
+        /// <returns>True if robot executed provided command and can execute next. False otherwise</returns>
+        bool ExecuteOrder(Command command)
         {
-            if (CanAdvance(command))
+            if (UpdateBaterryLevel(command))
             {
-                if (UpdateBaterryLevel(command))
+                if (CanExecuteOrder(command))
                 {
                     var location = new Location(currentLocation);
-
-                    // save visited and cleaned cells if needed
-
-                    visited.Add(location);
-                    if (command == Command.C)
-                    {
-                        cleaned.Add(location);
-                    }
+                    LogCommand(location, command);
 
                     UpdateLocation(command, currentLocation);
 
@@ -123,48 +126,53 @@ namespace CleaningRobot.CleaningRobot
                 }
                 else
                 {
-                    return false; // no battery left to execute command
+                    // If the command (which can only be advance) results on the robot entering 
+                    // an obstacle the robot will ignore the order and instead follow the following 
+                    // algorithm (back off strategy).
+                    if (command == Command.A)
+                    {
+                        return ExecuteBackOffStrategy();
+                    }
+
+                    return false;
                 }
             }
             else
             {
-                // probably robot will hit obstacle
-                if (ExecuteBackOffStrategy())
-                {
-                    // Now try to execute command
-                    return ExecuteCommand(command);
-                }
+                // If the robot doesn’t have enough battery left to execute the order, 
+                // the robot will ignore the order and instead follow the following 
+                // algorithm (back off strategy)
+                ExecuteBackOffStrategy();
+                return false;
             }
-
-            return false;
         }
 
         bool ExecuteBackOffStrategy()
         {
-            bool strategyExecuted = true;
-
             for (int i = 0; i < _backOffStartegies.Length; i++)
             {
+                bool strategyExecuted = true;
                 for (int j = 0; j < _backOffStartegies[i].Length; j++)
                 {
                     Command command = _backOffStartegies[i][j];
 
-                    if (CanAdvance(command))
+                    if (UpdateBaterryLevel(command))
                     {
-                        if (UpdateBaterryLevel(command))
+                        if (CanExecuteOrder(command))
                         {
+                            LogCommand(currentLocation, command);
                             UpdateLocation(command, currentLocation);
                         }
                         else
                         {
-                            return false; // no battery left
+                            // Robot hits obstacle while execute back off strategy. Lets try another one.
+                            strategyExecuted = false;
+                            break;
                         }
                     }
                     else
                     {
-                        // Robot hits obstacle while execute back off strategy. Lets try another one.
-                        strategyExecuted = false;
-                        break;
+                        return false;
                     }
                 }
 
@@ -174,7 +182,7 @@ namespace CleaningRobot.CleaningRobot
                 }
             }
 
-            return false; // no strategies left
+            return false; // Robot hits obstacle again on last startegy
         }
 
 
@@ -208,25 +216,38 @@ namespace CleaningRobot.CleaningRobot
 
             if (battery >= batteryConsumption)
             {
+                commandNumber++;
                 battery -= batteryConsumption;
                 return true;
             }
 
-            return false; // no batery left for command execution
+            return false; // No batery left for command execution
         }
 
         /// <summary>
-        /// Check if robot can advance next cell on the map
+        /// Check if robot can execute next command
         /// </summary>
-        /// <returns>True if robot can advance, false if robot will meet wall or column</returns>
-        bool CanAdvance(Command command)
+        /// <returns>True if robot can move, false if robot will hit obstacle</returns>
+        bool CanExecuteOrder(Command command)
         {
-            // make a copy of current location to see if robot can advance next move
+            if (command != Command.A && command != Command.B)
+            {
+                // no need to process something else instead of move forward or backward
+                return true;
+            }
+
+            // Make a copy of current location to see what happen after command execution
             var location = new RobotLocation(currentLocation);
 
             UpdateLocation(command, location);
 
-            return location.X >= 0 && location.X <= maxX && location.Y >= 0 && location.Y <= maxY;
+            if (location.X >= 0 && location.X <= maxX &&
+                location.Y >= 0 && location.Y <= maxY)
+            {
+                var mapCell = map[location.Y][location.X];
+                return mapCell != MapCell.C && mapCell != MapCell.Null;
+            }
+            return false;
         }
 
         /// <summary>
@@ -287,6 +308,21 @@ namespace CleaningRobot.CleaningRobot
 
             location.X += shiftX;
             location.Y += shiftY;
+        }
+
+        void LogCommand(Location location, Command command)
+        {
+            var loc = new Location(location);
+            switch (command)
+            {
+                case Command.A:
+                case Command.B:
+                    visited.Add(loc);
+                    break;
+                case Command.C:
+                    cleaned.Add(loc);
+                    break;
+            }
         }
     }
 }

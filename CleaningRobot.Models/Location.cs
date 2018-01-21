@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace CleaningRobot.Models
@@ -29,5 +30,22 @@ namespace CleaningRobot.Models
         /// </summary>
         [JsonProperty("Y")]
         public int Y { get; set; }
+
+        // override Equals and GetHashCode to compare to Location instances
+        public override bool Equals(object obj)
+        {
+            // Check for null values and compare run-time types.
+            if (obj == null || GetType() != obj.GetType()) {
+                return false;
+            }
+
+            Location l = (Location)obj;
+            return (X == l.X) && (Y == l.Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return X ^ Y;
+        }
     }
 }
