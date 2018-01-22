@@ -87,8 +87,8 @@ Application started. Press Ctrl+C to shut down.
 ```
 Now you can send requests to RESTfull api using ``curl`` or ``Postman`` or another program what can create and send HTTP requests.
 
-##### PUT /api/robot/<robot name>
-Create new robot called *<robot name>*. 
+##### PUT /api/robot/robot_name
+Create new robot called *robot_name*. 
 ```
 PUT: http://localhost:5000/api/robot/Johny
 -----
@@ -119,8 +119,8 @@ Create request with ``curl``
 curl -X GET  http://localhost:5000/api/robot
 ```
 
-##### POST /api/robot/<robot name>/execute
-Ask robot *<robot name>* to  execute list of commands
+##### POST /api/robot/robot_name/execute
+Ask robot *robot_name* to  execute list of commands
 ```
 POST: http://localhost:5000/api/robot/Johny/execute
 -----
@@ -131,8 +131,8 @@ Create request with ``curl``
 curl -H 'application/json' -X POST  http://localhost:5000/api/robot -d '[ "TL","A","C","A","C","TR","A","C"]' http://localhost:5000/api/robot/Johny/execute
 ```
 
-##### GET /api/robot/<robot name>
-Get robot *<robot name>* final result
+##### GET /api/robot/robot_name
+Get robot *robot_name* final result
 ```
 GET: http://localhost:5000/api/robot/Johny
 ```
@@ -141,8 +141,8 @@ Create request with ``curl``
 curl -X GET http://localhost:5000/api/robot/Johny
 ```
 
-##### DELETE /api/robot/<robot name>
-Delete robot *<robot name>*
+##### DELETE /api/robot/robot_name
+Delete robot *robot_name*
 ```
 DELETE: http://localhost:5000/api/robot/Johny
 ```
@@ -151,8 +151,8 @@ Create request with ``curl``
 curl -X DELETE http://localhost:5000/api/robot/Johny
 ```
 
-##### GET /api/robot/<robot name>/log
-Get robot *<robot name>* command execution log
+##### GET /api/robot/robot_name/log
+Get robot *robot_name* command execution log
 ```
 GET: http://localhost:5000/api/robot/Johny/log
 ```
