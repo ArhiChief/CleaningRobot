@@ -12,4 +12,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CleaningRobot.Models\CleaningRobot.Models.csproj" />
+    <ProjectReference Include="..\CleaningRobot.Common\CleaningRobot.Common.csproj" />
+    <ProjectReference Include="..\CleaningRobot.WebAPI\CleaningRobot.WebAPI.csproj" />
+  </ItemGroup>
+
 </Project>
