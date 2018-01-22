@@ -25,6 +25,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build_tests",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/CleaningRobot.Tests/CleaningRobot.Tests.csproj"
+            ],
+            "problemMatcher": "$msCompile",
         }
     ]
 }
