@@ -18,7 +18,25 @@ namespace CleaningRobot.WebAPI
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+            new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                    {
+                        var enviroment = hostingContext.HostingEnvironment;
+                        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                            .AddJsonFile($"appsettings.{enviroment.EnvironmentName}.json", true, true); // merge with enviroment configuration file
+                        config.AddEnvironmentVariables();
+                        if (args != null && args.Length > 0)
+                        {
+                            config.AddCommandLine(args);
+                        }
+                    })
+                .UseIISIntegration()
+                .UseDefaultServiceProvider((context, options) =>
+                    {
+                        options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
+                    })
                 .UseStartup<Startup>()
                 .Build();
     }
