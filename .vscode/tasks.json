@@ -10,10 +10,7 @@
                 "${workspaceFolder}/CleaningRobot.Console/CleaningRobot.Console.csproj"
             ],
             "problemMatcher": "$msCompile",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            
         },
         {
             "label": "build_webapi",
@@ -25,7 +22,8 @@
             ],
             "problemMatcher": "$msCompile",
             "group": {
-                "kind": "build"
+                "kind": "build",
+                "isDefault": true
             }
         }
     ]

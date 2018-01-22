@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CleaningRobot.Models\CleaningRobot.Models.csproj" />
     <ProjectReference Include="..\CleaningRobot.Common\CleaningRobot.Common.csproj" />
+    <ProjectReference Include="..\CleaningRobot.CleaningRobot\CleaningRobot.CleaningRobot.csproj" />
   </ItemGroup>
 
 </Project>

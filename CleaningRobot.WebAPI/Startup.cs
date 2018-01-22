@@ -39,6 +39,7 @@ namespace CleaningRobot.WebAPI
                         new FacingDirectionConverter(),
                         new MapCellConverter()
                     };
+                    setup.NullValueHandling = NullValueHandling.Ignore; // we don't want to send null values back to user 
                 });
 
             // add our stuff to DI container

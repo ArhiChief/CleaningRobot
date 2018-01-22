@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CleaningRobot.WebAPI.Infrastructure;
+using CleaningRobot.Models;
+using System.Net;
 
 namespace CleaningRobot.WebAPI.Controllers
 {
@@ -18,36 +20,81 @@ namespace CleaningRobot.WebAPI.Controllers
             _robotManager = robotManager ?? throw new ArgumentNullException(nameof(robotManager));
         }
 
-        // GET api/values
+        // create new robot
+        [HttpPut("{name}")]
+        public async Task<IActionResult> Create([FromBody]RobotInput robotInput, [FromRoute]string name) 
+        {
+            var result = await _robotManager.CreateAsync(robotInput, name);
+
+            if (result.Error != null) 
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Created(Url.Action("Create", new {name = name}), robotInput);
+        }
+
+        // delete robot
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> Delete(string name) 
+        {
+            var result = await _robotManager.DeleteAsync(name);
+
+            if (result.Error != null) 
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok(); 
+        }
+
+        // return robot final result
+        [HttpGet("{name}")]
+        public async Task<IActionResult> FinalResult(string name) 
+        {
+            var result = await _robotManager.GetFinalResultAsync(name);
+
+            if (result.Error != null) 
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok(result.Body);
+        }
+
+        // execute robot commands
+        [HttpPost("{name}/execute")]
+        public async Task<IActionResult> Execute([FromBody] Command[] commands, string name) 
+        {
+            var result = await _robotManager.ExecuteAsync(commands, name);
+
+            if (result.Error != null) 
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok();
+        }
+
+        // get log
+        [HttpGet("{name}/log")]
+        public async Task<IActionResult> Log(string name) 
+        {
+            var result = await _robotManager.GetLogAsync(name);
+
+            if (result.Error != null) 
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok(result.Body);
+        }
+
+        // return list of avaliable robots
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetAll() 
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok(await _robotManager.GetAllAsync());
         }
     }
 }
